@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import Image from 'next/image';
 
 export default function Camera() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -17,6 +18,7 @@ export default function Camera() {
       }
     } catch (error) {
       alert('カメラの起動に失敗しました');
+      console.error("Error starting camera:", error);
     }
   };
 
@@ -38,6 +40,11 @@ export default function Camera() {
 
   const applyTiltShiftEffect = (ctx: CanvasRenderingContext2D) => {
     const { width, height } = ctx.canvas;
+
+    if (!width) {
+      console.error("Canvas width is missing");
+      return;
+    }
 
     ctx.filter = 'blur(6px)';
     ctx.drawImage(ctx.canvas, 0, 0);
@@ -66,7 +73,12 @@ export default function Camera() {
       </div>
       {photoUrl && (
         <div className="mt-4">
-          <img src={photoUrl} alt="Captured Photo" className="w-full max-w-md rounded shadow-md" />
+          <Image
+            src={photoUrl}
+            alt="Captured Photo"
+            width={500} // 適切な幅を指定
+            height={500} // 適切な高さを指定
+          className="w-full max-w-md rounded shadow-md" />
           <a href={photoUrl} download="tilt-shift-photo.png" className="block mt-2 text-blue-500 hover:underline">
             写真をダウンロード
           </a>
